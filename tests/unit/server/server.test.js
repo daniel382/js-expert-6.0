@@ -1,6 +1,7 @@
 import { jest, expect, describe, test, beforeEach } from '@jest/globals'
 
 import { config } from '../../../server/config.js'
+import { Controller } from '../../../server/controller.js'
 import { handler } from '../../../server/routes.js'
 import { TestUtils } from '../_utils/utils.js'
 
@@ -24,7 +25,28 @@ describe('#Routes', function () {
       expect(params.response.end).toBeCalled()
     })
 
-    test.todo(`GET /home - should respond with ${pages.homeHTML} file stream`)
+    test(`GET /home - should respond with ${pages.homeHTML} file stream`, async function () {
+      const params = TestUtils.defaultHandleParams()
+      params.request.method = 'GET'
+      params.request.url = '/home'
+
+      const mockFileStream = TestUtils.generateReadableStream(['any data'])
+
+      jest
+        .spyOn(Controller.prototype, Controller.prototype.getFileStream.name)
+        .mockResolvedValue({
+          stream: mockFileStream
+        })
+
+      jest
+        .spyOn(mockFileStream, 'pipe')
+        .mockReturnValue()
+
+      await handler(...params.values())
+
+      expect(Controller.prototype.getFileStream).toBeCalledWith(pages.homeHTML)
+      expect(mockFileStream.pipe).toBeCalledWith(params.response)
+    })
 
     test.todo(`GET /controller - should respond with ${pages.controllerHTML} file stream`)
 
