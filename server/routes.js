@@ -6,7 +6,8 @@ const controller = new Controller()
 const {
   location,
   pages: {
-    homeHTML
+    homeHTML,
+    controllerHTML
   }
 } = config
 
@@ -21,13 +22,20 @@ const routes = {
 
     // response padrão 'text/html '
     return stream.pipe(response)
+  },
+
+  'GET:/controller': async function (request, response) {
+    const { stream } = await controller.getFileStream(controllerHTML)
+
+    // response padrão 'text/html '
+    return stream.pipe(response)
   }
 }
 
 export function handler (request, response) {
   const { method, url } = request
-  const httpPath = `${method}:${url}`
+  const httpResource = `${method}:${url}`
 
-  return routes[httpPath](request, response)
+  return routes[httpResource](request, response)
     .catch(error => logger.error(`Error: ${error.stack}`))
 }
