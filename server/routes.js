@@ -8,7 +8,8 @@ const {
   pages: {
     homeHTML,
     controllerHTML
-  }
+  },
+  constants
 } = config
 
 const routes = {
@@ -34,6 +35,8 @@ const routes = {
   'GET:/assets': async function (request, response) {
     const { url: filepath } = request
     const { stream, type } = await controller.getFileStream(filepath)
+
+    response.writeHead(200, { 'Content-Type': constants.CONTENT_TYPE[type] })
 
     return stream.pipe(response)
   },

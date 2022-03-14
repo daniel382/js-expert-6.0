@@ -25,5 +25,18 @@ export const config = {
   },
   location: {
     home: '/home'
+  },
+  constants: {
+    CONTENT_TYPE: {
+      '.html': 'text/html',
+      '.css': 'text/css',
+      '.js': 'text/javascript',
+      '.gif': 'image/gif',
+      '.png': 'image/png',
+      '.jpeg': 'image/jpeg',
+      '.jpg': 'image/jpeg',
+      '.bmp': 'image/bmp',
+      '.webp': 'image/webp'
+    }
   }
 }
