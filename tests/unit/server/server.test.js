@@ -34,9 +34,7 @@ describe('#Routes', function () {
 
       jest
         .spyOn(Controller.prototype, Controller.prototype.getFileStream.name)
-        .mockResolvedValue({
-          stream: mockFileStream
-        })
+        .mockResolvedValue({ stream: mockFileStream })
 
       jest
         .spyOn(mockFileStream, 'pipe')
@@ -48,7 +46,26 @@ describe('#Routes', function () {
       expect(mockFileStream.pipe).toBeCalledWith(params.response)
     })
 
-    test.todo(`GET /controller - should respond with ${pages.controllerHTML} file stream`)
+    test(`GET /controller - should respond with ${pages.controllerHTML} file stream`, async function () {
+      const params = TestUtils.defaultHandleParams()
+      params.request.method = 'GET'
+      params.request.url = '/controller'
+
+      const mockFileStream = TestUtils.generateReadableStream(['any data'])
+
+      jest
+        .spyOn(Controller.prototype, 'getFileStream')
+        .mockResolvedValue({ stream: mockFileStream })
+
+      jest
+        .spyOn(mockFileStream, 'pipe')
+        .mockReturnValue()
+
+      await handler(...params.values())
+
+      expect(Controller.prototype.getFileStream).toBeCalledWith(pages.controllerHTML)
+      expect(mockFileStream.pipe).toBeCalledWith(params.response)
+    })
 
     test.todo('GET /file.ext - should respond with a file stream')
 
