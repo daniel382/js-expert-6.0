@@ -29,13 +29,37 @@ const routes = {
 
     // response padrão 'text/html '
     return stream.pipe(response)
+  },
+
+  'GET:/assets': async function (request, response) {
+    const { url: filepath } = request
+    const { stream, type } = await controller.getFileStream(filepath)
+
+    return stream.pipe(response)
+  },
+}
+
+function handleError (error, response) {
+  if (error.message.includes('ENOENT')) {
+    logger.warn(`asset not found ${error.stack}`)
+    response.writeHead(404)
+    return response.end()
   }
+
+  logger.error(`caught error on API ${error.stack}`)
+  response.writeHead(500)
+  return response.end()
 }
 
 export function handler (request, response) {
   const { method, url } = request
   const httpResource = `${method}:${url}`
 
-  return routes[httpResource](request, response)
-    .catch(error => logger.error(`Error: ${error.stack}`))
+  if (routes[httpResource]) {
+    return routes[httpResource](request, response)
+      .catch(error => handleError(error, response))
+  }
+
+  return routes['GET:/assets'](request, response)
+    .catch(error => handleError(error, response))
 }
