@@ -1,8 +1,10 @@
 import { jest, expect, describe, test, beforeEach } from '@jest/globals'
 
 import { config } from '../../../server/config.js'
+import { handler } from '../../../server/routes.js'
+import { TestUtils } from '../_utils/utils.js'
 
-const { pages} = config
+const { pages, location } = config
 
 describe('#Routes', function () {
   describe('test suit for api response', function () {
@@ -11,7 +13,16 @@ describe('#Routes', function () {
       jest.clearAllMocks()
     })
 
-    test.todo('GET / - should redirect to home page')
+    test('GET / - should redirect to home page', async function () {
+      const params = TestUtils.defaultHandleParams()
+      params.request.method = 'GET'
+      params.request.url = '/'
+
+      await handler(...params.values())
+
+      expect(params.response.writeHead).toBeCalledWith(302, { Location: location.home })
+      expect(params.response.end).toBeCalled()
+    })
 
     test.todo(`GET /home - should respond with ${pages.homeHTML} file stream`)
 
