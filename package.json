@@ -16,6 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "pino": "^7.8.0",
+    "pino-pretty": "^7.5.3"
   }
 }
