@@ -64,6 +64,18 @@ describe('#Service', function () {
         expect(fileInfo).toEqual(new Error('ENOENT'))
       })
 
+      test('should throw if no file name is provided', function () {
+        const service = new Service()
+
+        jest
+          .spyOn(fs, 'createReadStream')
+          .mockReturnValue(new Error('argument must be of type string'))
+
+        const fileInfo = service.createFileStream()
+
+        expect(fileInfo).toEqual(new Error('argument must be of type string'))
+      })
+
       test.todo('should return a ReadStream')
     })
 
