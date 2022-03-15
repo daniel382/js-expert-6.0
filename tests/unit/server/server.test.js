@@ -94,6 +94,32 @@ describe('#Routes', function () {
       expect(params.response.writeHead).toBeCalledWith(200, expectedHeader)
     })
 
+    test('GET /file.ext - should respond with a file stream', async function () {
+      const expectedFilePath = '/file.ext'
+      const expectedType = '.ext'
+
+      const mockFileStream = TestUtils.generateReadableStream(['any data'])
+      const params = TestUtils.defaultHandleParams()
+
+      params.request.method = 'GET'
+      params.request.url = expectedFilePath
+
+
+      jest
+        .spyOn(Controller.prototype, 'getFileStream')
+        .mockResolvedValue({ stream: mockFileStream, type: expectedType })
+
+      jest
+        .spyOn(mockFileStream, 'pipe')
+        .mockReturnValue()
+
+      await handler(...params.values())
+
+      expect(Controller.prototype.getFileStream).toBeCalledWith(expectedFilePath)
+      expect(mockFileStream.pipe).toBeCalledWith(params.response)
+      expect(params.response.writeHead).not.toBeCalled()
+    })
+
     test.todo('GET /unknown - given an inexistent route it should respond with 404')
 
     describe('exceptios', function () {

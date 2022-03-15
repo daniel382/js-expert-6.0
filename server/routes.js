@@ -36,7 +36,10 @@ const routes = {
     const { url: filepath } = request
     const { stream, type } = await controller.getFileStream(filepath)
 
-    response.writeHead(200, { 'Content-Type': constants.CONTENT_TYPE[type] })
+    const contentType = constants.CONTENT_TYPE[type]
+    if (contentType) {
+      response.writeHead(200, { 'Content-Type': contentType })
+    }
 
     return stream.pipe(response)
   },
