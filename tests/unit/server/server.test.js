@@ -153,7 +153,21 @@ describe('#Routes', function () {
         expect(params.response.end).toHaveBeenCalled()
       })
 
-      test.todo('given an error, should respond with 500')
+      test('given an error, should respond with 500', async function () {
+        const params = TestUtils.defaultHandleParams()
+
+        params.request.method = 'GET'
+        params.request.url = '/home'
+
+        jest
+          .spyOn(Controller.prototype, 'getFileStream')
+          .mockRejectedValue({ message: 'any_error' })
+
+        await handler(...params.values())
+
+        expect(params.response.writeHead).toHaveBeenCalledWith(500)
+        expect(params.response.end).toHaveBeenCalled()
+      })
     })
   })
 })
