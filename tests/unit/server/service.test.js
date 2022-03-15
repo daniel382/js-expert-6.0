@@ -1,5 +1,6 @@
 import { jest, expect, describe, test, beforeEach } from '@jest/globals'
 
+import fs from 'fs'
 import path from 'path'
 import fsPromise from 'fs/promises'
 
@@ -51,7 +52,17 @@ describe('#Service', function () {
     })
 
     describe('createFileStream', function () {
-      test.todo('should throw if file does not exist')
+      test('should throw if file does not exist', function () {
+        const service = new Service()
+
+        jest
+          .spyOn(fs, 'createReadStream')
+          .mockReturnValue(new Error('ENOENT'))
+
+        const fileInfo = service.createFileStream('not_existent')
+
+        expect(fileInfo).toEqual(new Error('ENOENT'))
+      })
 
       test.todo('should return a ReadStream')
     })
