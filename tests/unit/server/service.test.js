@@ -121,7 +121,34 @@ describe('#Service', function () {
         expect(fileInfo).rejects.toThrow(new Error('ANY_ERROR'))
       })
 
-      test.todo('should return a stream and type')
+      test('should return a stream and type', async function () {
+        const service = new Service()
+        const mockedFileInfo = {
+          name: '/any/file.name',
+          type: 'any.filetype'
+        }
+
+        const mockedStream = {
+          write: () => {}
+        }
+
+        const expectedFileInfo = {
+          stream: mockedStream,
+          type: mockedFileInfo.type
+        }
+
+        jest
+          .spyOn(service, 'getFileInfo')
+          .mockReturnValue(mockedFileInfo)
+
+        jest
+          .spyOn(service, 'createFileStream')
+          .mockReturnValue(mockedStream)
+
+        const fileInfo = await service.getFileStream('any_file_name')
+
+        expect(fileInfo).toEqual(expectedFileInfo)
+      })
     })
   })
 })
