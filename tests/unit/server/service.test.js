@@ -76,7 +76,20 @@ describe('#Service', function () {
         expect(fileInfo).toEqual(new Error('argument must be of type string'))
       })
 
-      test.todo('should return a ReadStream')
+      test('should return a ReadStream', function () {
+        const service = new Service()
+        const expectedStream = {
+          write: () => {}
+        }
+
+        jest
+          .spyOn(fs, 'createReadStream')
+          .mockReturnValue(expectedStream)
+
+        const fileInfo = service.createFileStream()
+
+        expect(fileInfo).toEqual(expectedStream)
+      })
     })
 
     describe('getFileStream', function () {
