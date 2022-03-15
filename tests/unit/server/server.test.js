@@ -21,8 +21,8 @@ describe('#Routes', function () {
 
       await handler(...params.values())
 
-      expect(params.response.writeHead).toBeCalledWith(302, { Location: location.home })
-      expect(params.response.end).toBeCalled()
+      expect(params.response.writeHead).toHaveBeenCalledWith(302, { Location: location.home })
+      expect(params.response.end).toHaveBeenCalled()
     })
 
     test(`GET /home - should respond with ${pages.homeHTML} file stream`, async function () {
@@ -42,8 +42,8 @@ describe('#Routes', function () {
 
       await handler(...params.values())
 
-      expect(Controller.prototype.getFileStream).toBeCalledWith(pages.homeHTML)
-      expect(mockFileStream.pipe).toBeCalledWith(params.response)
+      expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(pages.homeHTML)
+      expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
     })
 
     test(`GET /controller - should respond with ${pages.controllerHTML} file stream`, async function () {
@@ -63,8 +63,8 @@ describe('#Routes', function () {
 
       await handler(...params.values())
 
-      expect(Controller.prototype.getFileStream).toBeCalledWith(pages.controllerHTML)
-      expect(mockFileStream.pipe).toBeCalledWith(params.response)
+      expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(pages.controllerHTML)
+      expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
     })
 
     test('GET /index.html - should respond with a file stream', async function () {
@@ -89,9 +89,9 @@ describe('#Routes', function () {
 
       await handler(...params.values())
 
-      expect(Controller.prototype.getFileStream).toBeCalledWith(expectedFilePath)
-      expect(mockFileStream.pipe).toBeCalledWith(params.response)
-      expect(params.response.writeHead).toBeCalledWith(200, expectedHeader)
+      expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(expectedFilePath)
+      expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
+      expect(params.response.writeHead).toHaveBeenCalledWith(200, expectedHeader)
     })
 
     test('GET /file.ext - should respond with a file stream', async function () {
@@ -115,12 +115,26 @@ describe('#Routes', function () {
 
       await handler(...params.values())
 
-      expect(Controller.prototype.getFileStream).toBeCalledWith(expectedFilePath)
-      expect(mockFileStream.pipe).toBeCalledWith(params.response)
-      expect(params.response.writeHead).not.toBeCalled()
+      expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(expectedFilePath)
+      expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
+      expect(params.response.writeHead).not.toHaveBeenCalled()
     })
 
-    test.todo('GET /unknown - given an inexistent route it should respond with 404')
+    test('GET /unknown - given an inexistent route, should respond with 404', async function () {
+      const params = TestUtils.defaultHandleParams()
+
+      params.request.method = 'GET'
+      params.request.url = '/unknown'
+
+      jest
+        .spyOn(Controller.prototype, 'getFileStream')
+        .mockRejectedValue({ message: 'ENOENT' })
+
+      await handler(...params.values())
+
+      expect(params.response.writeHead).toHaveBeenCalledWith(404)
+      expect(params.response.end).toHaveBeenCalled()
+    })
 
     describe('exceptios', function () {
       test.todo('given an inexistent file, should respond with 404')
