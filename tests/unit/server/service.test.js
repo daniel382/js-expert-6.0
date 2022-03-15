@@ -1,4 +1,5 @@
 import { jest, expect, describe, test, beforeEach } from '@jest/globals'
+import fsPromise from 'fs/promises'
 
 import { Service } from '../../../server/service.js'
 
@@ -14,7 +15,17 @@ describe('#Service', function () {
         })
       })
 
-      test.todo('should throw if file does not exist')
+      test('should throw if file does not exist', function () {
+        const service = new Service()
+
+        jest
+          .spyOn(fsPromise, 'access')
+          .mockRejectedValue(new Error('ENOENT'))
+
+        const fileInfo = service.getFileInfo('not_existent')
+
+        expect(fileInfo).rejects.toThrow(new Error('ENOENT'))
+      })
 
       test.todo('should file type and file name')
     })
