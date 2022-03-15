@@ -107,6 +107,20 @@ describe('#Service', function () {
         expect(fileInfo).rejects.toThrow(new Error('ANY_ERROR'))
       })
 
+      test('should throw if createFileStream throws', function () {
+        const service = new Service()
+
+        jest
+          .spyOn(service, 'createFileStream')
+          .mockImplementation(function () {
+            throw new Error ('ANY_ERROR')
+          })
+
+        const fileInfo = service.getFileStream()
+
+        expect(fileInfo).rejects.toThrow(new Error('ANY_ERROR'))
+      })
+
       test.todo('should return a stream and type')
     })
   })
