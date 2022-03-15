@@ -137,7 +137,21 @@ describe('#Routes', function () {
     })
 
     describe('exceptios', function () {
-      test.todo('given an inexistent file, should respond with 404')
+      test('given an inexistent file, should respond with 404', async function () {
+        const params = TestUtils.defaultHandleParams()
+
+        params.request.method = 'GET'
+        params.request.url = '/home'
+
+        jest
+          .spyOn(Controller.prototype, 'getFileStream')
+          .mockRejectedValue({ message: 'ENOENT' })
+
+        await handler(...params.values())
+
+        expect(params.response.writeHead).toHaveBeenCalledWith(404)
+        expect(params.response.end).toHaveBeenCalled()
+      })
 
       test.todo('given an error, should respond with 500')
     })
