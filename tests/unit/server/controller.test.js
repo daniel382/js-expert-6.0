@@ -39,6 +39,26 @@ describe('#Controller - test suit ', function () {
       expect(fileStream).rejects.toThrow(new Error('NO_FILE_NAME'))
     })
 
-    test.todo('shoud return correct stream and type')
+    test('shoud return correct stream and type', async function () {
+      const controller = new Controller()
+      const service = new Service()
+
+      const mockedStream = {
+        write: () => {}
+      }
+
+      const expectedFileInfo = {
+        stream: mockedStream,
+        type: 'any_type'
+      }
+
+      jest
+        .spyOn(service, 'getFileStream')
+        .mockReturnValue(expectedFileInfo)
+
+      const fileStream = await controller.getFileStream('any_file')
+
+      expect(fileStream).toEqual(expectedFileInfo)
+    })
   })
 })
