@@ -93,7 +93,19 @@ describe('#Service', function () {
     })
 
     describe('getFileStream', function () {
-      test.todo('should throw if file does not exist')
+      test('should throw if getFileInfo throws', function () {
+        const service = new Service()
+
+        jest
+          .spyOn(service, 'getFileInfo')
+          .mockImplementation(function () {
+            throw new Error ('ANY_ERROR')
+          })
+
+        const fileInfo = service.getFileStream()
+
+        expect(fileInfo).rejects.toThrow(new Error('ANY_ERROR'))
+      })
 
       test.todo('should return a stream and type')
     })
