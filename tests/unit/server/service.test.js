@@ -1,4 +1,6 @@
 import { jest, expect, describe, test, beforeEach } from '@jest/globals'
+
+import path from 'path'
 import fsPromise from 'fs/promises'
 
 import { Service } from '../../../server/service.js'
@@ -27,7 +29,25 @@ describe('#Service', function () {
         expect(fileInfo).rejects.toThrow(new Error('ENOENT'))
       })
 
-      test.todo('should file type and file name')
+      test('should file type and file name', async function () {
+        const service = new Service()
+
+        jest
+          .spyOn(path, 'join')
+          .mockReturnValue('/full/file/path.ext')
+
+        jest
+          .spyOn(fsPromise, 'access')
+          .mockResolvedValue(true)
+
+        jest
+          .spyOn(path, 'extname')
+          .mockReturnValue('.ext')
+
+        const fileInfo = await service.getFileInfo('/file/path.ext')
+
+        expect(fileInfo).toEqual({ type: '.ext', name: '/full/file/path.ext' })
+      })
     })
 
     describe('createFileStream', function () {
