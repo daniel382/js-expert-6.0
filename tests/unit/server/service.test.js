@@ -5,7 +5,14 @@ import { Service } from '../../../server/service.js'
 describe('#Service', function () {
   describe('test suit for service', function () {
     describe('getFileInfo', function () {
-      test.todo('should throw if no filename is provided')
+      test('should throw if no filename is provided', function () {
+        const service = new Service()
+        const fileInfo = service.getFileInfo()
+
+        expect(fileInfo).rejects.toThrow({
+          message: 'The "path" argument must be of type string. Received undefined'
+        })
+      })
 
       test.todo('should throw if file does not exist')
 
